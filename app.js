@@ -3,7 +3,7 @@ const server = 'https://usman-recipes.herokuapp.com/api/products/';
 $(() => {
     getProducts((products) => {
         products.forEach((product, i) => {
-            var row = $('<div>', { 'id': product._id, });
+            var row = $('<div>', { 'id': product._id });
             row.html(`<div class="p-5">
             <div class="card p-3">
                 <h2>${product.name}</h2>
@@ -11,8 +11,10 @@ $(() => {
                 <p>Price: ${product.price}</p>
                 <p>Department: ${product.department}</p>
                 <p>color: ${product.color}</p>
-                <button class="btn btn-outline-secondary" onclick="editProduct('${product._id}')">Edit</button>
-                <button class="mt-2 btn btn-outline-danger" onclick="delProduct('${product._id}')">Delete</button>
+                <div class="d-flex flex-row-reverse">
+                    <button class="ml-2 btn btn-outline-danger" onclick="delProduct('${product._id}')">Delete</button>
+                    <button class="btn btn-outline-secondary" onclick="editProduct('${product._id}')">Edit</button>
+                </div>
             </div>
         </div>`);
             $('#products').append(row);
@@ -38,8 +40,8 @@ function editProduct(product_id) {
     });
 }
 
-function delProduct(product_id){
-    deleteProduct(product_id, ()=> {
+function delProduct(product_id) {
+    deleteProduct(product_id, () => {
         location.reload();
     });
 }
@@ -69,7 +71,7 @@ function onFormSubmitted() {
                 price: $('#price').val(),
                 department: $('#department').val(),
                 color: $('#color').val()
-            },(success)=>{
+            }, (success) => {
                 $('#product-modal').modal('hide');
                 location.reload();
             }
@@ -105,7 +107,7 @@ function addProduct(product, onSuccess) {
 function updateProduct(id, product, onSuccess) {
     $.ajax({
         type: "put",
-        url: server+id,
+        url: server + id,
         data: product,
         success: onSuccess
     });
@@ -114,7 +116,7 @@ function updateProduct(id, product, onSuccess) {
 function deleteProduct(id, onSuccess) {
     $.ajax({
         type: "delete",
-        url: server+id,
+        url: server + id,
         success: onSuccess
     });
 }
