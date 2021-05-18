@@ -7,11 +7,12 @@ $(() => {
             row.html(`<div class="p-5">
             <div class="card p-3">
                 <h2>${product.name}</h2>
-                <p>${product.description}</p>
-                <p>${product.price}</p>
-                <p>${product.department}</p>
-                <p>${product.color}</p>
+                <p>Description: ${product.description}</p>
+                <p>Price: ${product.price}</p>
+                <p>Department: ${product.department}</p>
+                <p>color: ${product.color}</p>
                 <button class="btn btn-outline-secondary" onclick="editProduct('${product._id}')">Edit</button>
+                <button class="mt-2 btn btn-outline-danger" onclick="delProduct('${product._id}')">Delete</button>
             </div>
         </div>`);
             $('#products').append(row);
@@ -19,7 +20,6 @@ $(() => {
     });
 
     $("#product-form").submit(function (event) {
-        alert("Handler for .submit() called.");
         onFormSubmitted();
         event.preventDefault();
     });
@@ -38,6 +38,12 @@ function editProduct(product_id) {
     });
 }
 
+function delProduct(product_id){
+    deleteProduct(product_id, ()=> {
+        location.reload();
+    });
+}
+
 function add() {
     $('#product-form').trigger("reset");
     $('#product-modal').modal('show');
@@ -45,6 +51,7 @@ function add() {
 
 function onFormSubmitted() {
     console.log({
+        id: $('#_id').val(),
         name: $('#name').val(),
         description: $('#description').val(),
         price: $('#price').val(),
@@ -54,6 +61,19 @@ function onFormSubmitted() {
 
     if ($('#_id').val() != "") {
         // Update Form
+        updateProduct(
+            $('#_id').val(),
+            {
+                name: $('#name').val(),
+                description: $('#description').val(),
+                price: $('#price').val(),
+                department: $('#department').val(),
+                color: $('#color').val()
+            },(success)=>{
+                $('#product-modal').modal('hide');
+                location.reload();
+            }
+        );
     } else {
         // Add form
         addProduct({
@@ -62,8 +82,9 @@ function onFormSubmitted() {
             price: $('#price').val(),
             department: $('#department').val(),
             color: $('#color').val()
-        }, () => {
+        }, (success) => {
             $('#product-modal').modal('hide');
+            location.reload();
         });
     }
 }
@@ -78,13 +99,13 @@ function getProduct(id, onSuccess) {
 }
 
 function addProduct(product, onSuccess) {
-    $.post(server_url, product, onSuccess);
+    $.post(server, product, onSuccess);
 }
 
 function updateProduct(id, product, onSuccess) {
     $.ajax({
         type: "put",
-        url: server_url+id,
+        url: server+id,
         data: product,
         success: onSuccess
     });
@@ -93,10 +114,8 @@ function updateProduct(id, product, onSuccess) {
 function deleteProduct(id, onSuccess) {
     $.ajax({
         type: "delete",
-        url: server_url+id,
-        success: function (response) {
-            onSuccess(response);
-        }
+        url: server+id,
+        success: onSuccess
     });
 }
 
